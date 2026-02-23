@@ -22,6 +22,8 @@ public class GuessingApp
         
         Scanner scanner = new Scanner(System.in);
         int attempts = 0;
+        int hintCount = config.getMaxHints();
+        int target = config.getTargetNumber();
 
         /**
          * Game loop runs until the player
@@ -32,7 +34,7 @@ public class GuessingApp
             int guess = scanner.nextInt();
             attempts++;
 
-            String result = GuessValidator.validateGuess(guess, config.getTargetNumber());
+            String result = GuessValidator.validateGuess(guess, target);
 
             System.out.println(result);
 
@@ -40,7 +42,10 @@ public class GuessingApp
              * Stop the loop immediately
              * if the correct number is guessed.
              */
-            if ("CORRECT".equals(result)) {
+            if (result != "CORRECT") {
+                String hint = HintService.generateHint(target, --hintCount);
+                System.out.println(hint);
+            } else {
                 break;
             }
         }
