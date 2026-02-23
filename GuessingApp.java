@@ -1,28 +1,31 @@
 /**
- * GuessingApp - Use Case 2: User Guess Submission
+ * GuessingApp - Use Case 4: Error Handling & Validation
  * 
  * MAIN ClASS
  * 
- * Coordinates the game flow:
- * 1. Initialize game
- * 2. Accept user guesses
- * 3. Validate guesses
- * 4. Stop when game ends
+ * This class coordinates the game execution while ensuring 
+ * all user inputs are safely validated before processing.
+ * 
+ * Responsibilities:
+ * - Initialize game configuration
+ * - Accept user input
+ * - Validate input using ValidationService
+ * - Handle game flow without crashing on invalid input
  * 
  * @author Developer
- * @version 2.0
+ * @version 4.0
  */
 import java.util.*;
 public class GuessingApp
 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidInputException {
         System.out.println("Welcome to the Guessing App");
         GameConfig config = new GameConfig();
         config.showRules();
         
         Scanner scanner = new Scanner(System.in);
         int attempts = 0;
-        int hintCount = config.getMaxHints();
+        int hintCount = 0;
         int target = config.getTargetNumber();
 
         /**
@@ -30,24 +33,35 @@ public class GuessingApp
          * exhausts the maximum attempts.
          */
         while (attempts < config.getMaxAttempts()) {
-            System.out.println("Enter your guess: ");
-            int guess = scanner.nextInt();
-            attempts++;
+              System.out.print("Enter your guess: ");
+              /**
+               * User input is validated before
+               * being used in the game logic.
+               */
+              int guess = ValidationService.validateInput(scanner.nextLine());
+              attempts++;
 
-            String result = GuessValidator.validateGuess(guess, target);
+              String result = GuessValidator.validateGuess(guess, config.getTargetNumber());
 
-            System.out.println(result);
+              /**
+               * A hint is generated only after
+               * an incorrect guess and within
+               * the allowed hint limit.
+               */
+              if (!"CORRECT".equals(result) && hintCount < config.getMaxHints()) {
+                hintCount++;
+                System.out.println(HintService.generateHint(config.getTargetNumber(), hintCount));
+              }
 
-            /**
-             * Stop the loop immediately
-             * if the correct number is guessed.
-             */
-            if (result != "CORRECT") {
-                String hint = HintService.generateHint(target, --hintCount);
-                System.out.println(hint);
-            } else {
+              System.out.println(result);
+
+              /**
+               * Stop the loop immediately
+               * if the correct number is guessed.
+               */
+              if ("CORRECT".equals(result)) {
                 break;
-            }
+              }
         }
     }
 }
