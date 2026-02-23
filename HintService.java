@@ -18,11 +18,11 @@ public class HintService {
      * revealing the exact number.
      */
     public static String generateHint(int target, int hintCount) {
-        if (hintCount == 2) {
+        if (hintCount == 1) {
             return (target % 2 ==0)
                     ? "Hint: Number is Even"
                     : "Hint: Number is ODD";
-        } else if (hintCount ==1) {
+        } else if (hintCount == 2) {
             return (target > 50)
                     ? "Hint: Number is greater than 50"
                     : "Hint: Number is 50 or less";
