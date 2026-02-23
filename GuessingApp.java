@@ -1,32 +1,49 @@
 /**
- * GuessingApp - Use Case 4: Error Handling & Validation
- * 
  * MAIN ClASS
+ * GuessingApp - Use Case 5: Game Result Storage
  * 
- * This class coordinates the game execution while ensuring 
- * all user inputs are safely validated before processing.
+ * 
+ * This class coordinates the complete game flow
+ * and persists the final result after completion.
  * 
  * Responsibilities:
  * - Initialize game configuration
- * - Accept user input
- * - Validate input using ValidationService
- * - Handle game flow without crashing on invalid input
+ * - Accept and validate user guesses
+ * - Generate hints when applicable
+ * - Store game result at the end
  * 
  * @author Developer
- * @version 4.0
+ * @version 5.0
  */
 import java.util.*;
 public class GuessingApp
 {
     public static void main(String[] args) throws InvalidInputException {
+
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("===========================");
         System.out.println("Welcome to the Guessing App");
+        System.out.println("===========================");
+
+        /**
+         * Player name is captured once
+         * and stored along with game results.
+         */
+        System.out.print("Enter Player Name: ");
+        String player = scanner.nextLine();
+
         GameConfig config = new GameConfig();
         config.showRules();
         
-        Scanner scanner = new Scanner(System.in);
         int attempts = 0;
-        int hintCount = 0;
-        int target = config.getTargetNumber();
+        int hintsUsed = 0;
+
+        /**
+         * Tracks whether the player
+         * successfully guessed the number.
+         */
+        boolean win = false;
 
         /**
          * Game loop runs until the player
@@ -48,9 +65,9 @@ public class GuessingApp
                * an incorrect guess and within
                * the allowed hint limit.
                */
-              if (!"CORRECT".equals(result) && hintCount < config.getMaxHints()) {
-                hintCount++;
-                System.out.println(HintService.generateHint(config.getTargetNumber(), hintCount));
+              if (!"CORRECT".equals(result) && hintsUsed < config.getMaxHints()) {
+                hintsUsed++;
+                System.out.println(HintService.generateHint(config.getTargetNumber(), hintsUsed));
               }
 
               System.out.println(result);
@@ -60,9 +77,15 @@ public class GuessingApp
                * if the correct number is guessed.
                */
               if ("CORRECT".equals(result)) {
+                win = true;
                 break;
               }
         }
+        /**
+         * Final game result is persisted
+         * after the game loop completes.
+         */
+        StorageService.saveResult(player, attempts, win);
     }
 }
 
